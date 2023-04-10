@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's privacy policy.</p>
+
+
+<div>
+    <form>
+        <div>
+            <input type="file" id="imageUpload" />
+        </div>
+        <div>
+            <input type="text" id="textInput" />
+        </div>
+        <div>
+            <button id="uploadButton">Upload</button>
+        </div>
+    </form>
+</div>
+
+<div id="uploadedImage">
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#uploadButton").click(function (e) {
+            e.preventDefault();  // prevent the form from submitting and reloading the page
+
+            var file = $("#imageUpload")[0].files[0];
+            var formData = new FormData();
+            formData.append("file", file);
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/UploadImage",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $("#uploadedImage").html("<img src='" + data + "' />");
+                }
+            });
+        });
+    });
+
+</script>

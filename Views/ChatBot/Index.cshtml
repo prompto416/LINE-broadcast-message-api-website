@@ -1,0 +1,123 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+@*@Model List<NewQuestion>*@
+@model MyViewModel
+
+
+
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<button id="myButton">Click me!</button>
+<script>
+    $(document).ready(function () {
+        $('#myButton').click(function () {
+            $.ajax({
+                url: '/ChatBot/CreateGroup',
+                type: 'POST'
+            });
+        });
+    });
+
+
+</script>
+*@
+<div>
+    <label for="groupName">Create Reply Group:</label>
+    <input type="text" id="groupName" name="groupName" />
+    <button id="createButton" class="btn btn-primary">Create</button>
+</div>
+
+
+    <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>reply_id</th>
+            <th>reply_group</th>
+            <th>question</th>
+            <th>set group</th>
+            <th>Delete Question</th>
+            
+          
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model.Questions)
+            {
+                <tr>
+                    <td>@item.reply_id</td>
+                    <td>@item.reply_group</td>
+                    <td>@item.question</td>
+                    <td>
+                        <form method="post" action="@Url.Action("SetReplyGroup", "ChatBot")">
+                            <select name="replyGroup">
+                                @foreach (var option in Model.ReplyGroup)
+                                {
+                                    <option value="@option.reply_group">@option.reply_group</option>
+                                }
+                            </select>
+                            <input type="hidden" name="question" value="@item.question" />
+                            <button type="submit" style="background-color: dodgerblue;color: white;">Set</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="@Url.Action("DeleteQuestion", "ChatBot")">
+                            <input type="hidden" name="question" value="@item.question" />
+                            <button type="submit" style="background-color: darkred; color: white;">Delete</button>
+
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+
+
+</table>
+
+
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#createButton").on("click", function () {
+                var groupName = $("#groupName").val();
+                if (groupName === '') {
+                    alert("Please enter a group name");
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddReplyGroup", "ChatBot")",
+                    data: { groupName: groupName },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            alert("Group created successfully!");
+                            $("#groupName").val('');
+                            location.reload();
+
+                        } else {
+                            alert("An error occurred. Please try again.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred. Please try again.");
+                    }
+                });
+            });
+        });
+
+
+    </script>
+}
+

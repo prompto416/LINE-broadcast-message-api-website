@@ -1,0 +1,120 @@
+﻿@Model List<Schedule>
+    @{
+        ViewData["Title"] = "Home Page";
+    }
+
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Time</th>
+                <th>Message</th>
+                <th>Repeat Interval</th>
+                <th>Target</th>
+                <th>Schedule ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.startDate</td>
+                        <td>@item.endDate</td>
+                        <td>@item.time</td>
+                        <td>@item.message</td>
+                        <td>@item.repeat_interval</td>
+                        <td>@item.target</td>
+                        @*<td><span style="opacity:0;">This sentence is invisible</span> </td>*@
+                        <td>@item.increment</td>
+                        <td>
+                            <form method="post" enctype="multipart/form-data" asp-controller="LineProfiles" asp-action="deleteScheduleSqlQuery">
+                                <div class="form-group">
+
+                                    
+                                    <input type="text" class="form-control" id="txtScheduleId" name="scheduleId" value="@item.increment" hidden>
+
+                                </div>
+                                <input style="background-color: dodgerblue; color: white;" onclick="return confirm('Are you sure you want to edit delete schedule?')" type="submit" value="Delete" />
+
+                            </form>
+
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>Empty</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+
+
+
+    @*<form>
+    <button name="button" value="first" asp-action="ExecuteClient">Test</button>
+    </form>
+
+    <button onclick="submitForm()" class="btn btn-primary">Send</button>
+
+    <form>
+    <button name="WriteLineButton" value="first" asp-action="WriteLine">WriteLine</button>
+    </form>
+
+    <form>
+    <button name="WriteLineInspectElement" value="first" asp-action="/Home/WriteLine">WriteLine</button>
+    </form>
+
+
+
+
+
+    *@
+
+
+    <script type="text/javascript">
+
+
+        function submitForm() {
+            var data = {
+                listName: $("#txtAreaUser").val(),
+                Message: $("#txtMessage").val(),
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/api/LineService/SendMultiMessage',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+            })
+            location.reload();
+        }
+
+                            //backup
+        /*
+        $(document).ready(function () {
+            $(".custom-file-input").on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next(".custom-file-name").html(fileName);
+            })
+        });
+
+    </script>
+
+
+    @*    @foreach (string file in Directory.GetFiles(Server.MapPath("~/Images"), "uploadedImage*"))
+    {
+    <div>
+    <img src="@Url.Content(file)" width="100" />
+    </div>
+    }
+
+
+    *@

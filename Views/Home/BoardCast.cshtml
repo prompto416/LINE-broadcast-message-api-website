@@ -1,0 +1,182 @@
+﻿@{
+    ViewData["Title"] = "BoardCast Page";
+}
+<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="getInputValue">
+    <div class="form-group">
+        <label>Enter User and Broadcast Target</label>
+        <textarea class="form-control" id="txtUserInput" name="userInput" placeholder="ให้คั่นเเต่ละ user ด้วย , เช่น user1,user2&#10;หากต้องการส่งข้อความตาม Tag ให้ขึ้นต้นด้วย@อย่างเช่น@tag1,user1,user2 เเละคั่นด้วย , ตลอด&#10;**ชื่อ user อ้างอิงจาก nickname(editName)เท่านั้นสามารถดูได้จากเเทบ profile" rows="8" required></textarea>
+    </div>
+    <div class="form-group">
+        <label>||Enter Message||</label> 
+        
+        @*<input type="text" class="form-control" id="txtMessage" name="message" placeholder="Enter Message">*@
+        <textarea class="form-control" id="txtMessage" name="message" placeholder="ให้คั่นเเต่ละข้อความให้อยู่ในช่อง ;; เช่น ;ข้อความ1; ;ข้อความ2;&#10กรณีจะส่งรูปให้ใส่ link รูปไว้ดังนี้ด้วยเครื่องหมาย ||อยู่บนปุ่ม Enter คีย์เดียวกับ backslash|| ;||urlของรูป||;&#10สามารถส่งรูปรวมข้อความได้เช่น ;ข้อความ1; ;||urlรูป2||;เเละขึ้นบรรทัดใหม่ได้เพื่อความเป็นระเบียบเช่น&#10;;ข้อความ1;&#10;;ข้อความ2;&#10;;||linkรูป3||;" rows="8" required></textarea>
+        
+    </div>
+    @*<button onclick="submitForm()" class="btn btn-primary">Send</button>*@
+    <td>
+        <label> Enter Schedule Time and Repeat Interval </label>
+        <br />
+        @*<input type="date" class="form-control" id="txtSchedule" name="schedule">*@
+        <td><input type="date" name="startDate" onchange="checkInputs()"/></td>
+        <td><input type="date" name="endDate" /></td>
+        <td><input type="time" name="time"/></td>
+        <td>
+            <input type="checkbox" name="monday" value="true" />
+            <label>Monday</label>
+        </td>
+        <td>
+        <input type="checkbox" name="tuesday" value="true" />
+            <label>Tuesday</label>
+        </td>
+        <td>
+            <input type="checkbox" name="wednesday" value="true" />
+            <label>Wednesday</label>
+        </td>
+        <td>
+            <input type="checkbox" name="thursday" value="true" />
+            <label>Thursday</label>
+        </td>
+        <td>
+            <input type="checkbox" name="friday" value="true" />
+            <label>Friday</label>
+        </td>
+        <td>
+            <input type="checkbox" name="saturday" value="true" />
+            <label>Saturday</label>
+        </td>
+        <td>
+            <input type="checkbox" name="sunday" value="true" />
+            <label>Sunday</label>
+        </td>
+        
+        
+       @* <select name="repeatInterval" >
+            <option value="">None</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+        </select>*@
+        <br />
+        <script>
+            function checkInputs() {
+                const input1 = document.getElementsByName("startDate")[0].value;
+                const input2 = document.getElementsByName("endDate")[0];
+
+                if (input1.trim().length > 0) {
+                    input2.required = true;
+                } 
+            }
+        </script>
+        
+      
+    </td>
+    @*<br><input type="submit" value="Submit" style="background-color:cadetblue"/></br>*@
+    <br><input id="btnSubmit" type="submit" onclick="doubleCall()" style="background-color:cadetblue" /></br>
+    <script>
+        function doubleCall() {
+            document.getElementById("btnSubmit").value = "Submit";
+        }
+    </script>
+    
+</form>
+@*<button name="sendButton" asp-action="WriteLine" class="btn btn-primary">Send</button>*@
+
+
+@*<form>
+    <button name="button123" value="third" asp-action="WriteLine">TestLineMessage</button>
+</form>*@
+
+
+
+<script type="text/javascript">
+    function submitForm() {
+        var settings = {
+            "url": "https://api.line.me/v2/bot/message/push",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Authorization": "Bearer 8jcva04mhIBVnMFqCfaQe5NNIkpAA5xm/uq2IOPRpGzHcSCCYQV+FbAhqI06FxzPorWCpL6tXSFcSJBHp0OESgaoomYPFofuQ71uO5Q0NzmBiMsVkBnIgeArfezFw+dgJRgAvzHPN054amxDLexEcAdB04t89/1O/w1cDnyilFU=",
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "to": "Uc993a7060da875cc7c48196773ff4175",
+                "messages": [
+                    {
+                        "type": "text",
+                        "text": "Hello, world1"
+                    },
+                    {
+                        "type": "text",
+                        "text": "Hello, world2"
+                    }
+                ]
+            }),
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+        });
+        location.reload();
+    }
+
+    /*function submitForm() {
+        var data = {
+            listName: $("#txtAreaUser").val(),
+            Message: $("#txtMessage").val(),
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/api/LineService/SendMultiMessage',
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        })
+        location.reload();
+    }
+
+    //backup
+    /*
+    $(document).ready(function () {
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next(".custom-file-name").html(fileName);
+        })
+    });
+    */
+</script>
+
+@*
+<script src="~/js/jquery-2.2.3.min.js"></script>
+<form method="post" asp-controller="Home" asp-action="ImageUpload" enctype="multipart/form-data">
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Photo:</label>
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input class="form-control custom-file-input" type="file" name="file" />
+                <label class="custom-file-label" Browse..</label>
+
+            </div>
+
+        </div>
+        <button type="submit">Upload</button>
+
+    </div>
+    <!--img src="" width="600" height="400" /-->
+</form>
+
+<script type="text/javascript">
+    //Image Browsing select
+    $(document).ready(function () {
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next(".custom-file-label").html(fileName);
+        })
+    });
+</script>
+
+
+*@

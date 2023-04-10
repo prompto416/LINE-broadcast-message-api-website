@@ -1,0 +1,288 @@
+﻿@Model List<Customer>
+    @{
+        ViewData["Title"] = "Home Page";
+        int i = 0;
+    }
+
+    <div style="display: flex;">
+        <table class="table table-bordered" style="float: left;">
+            <thead>
+                <tr>
+                    @*<th>userId</th>*@
+                    <th>displayName</th>
+                    @*<th>Picture</th>*@
+                    <th>Custom Nickname</th>
+                    <th>Edit Name</th>
+                    <th> Tag </th>
+                    <th>Edit Tag</th>
+
+
+                    @*<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="createTag">
+                    <div class="form-group">
+
+                    <input type="text" class="form-control" id="txtnickname" name="nickname" size="3" placeholder="Enter Tag">
+
+
+                    </div>
+                    <input style="background-color: white; color: white;" onclick="return confirm('Are you sure you want to create tag?')" type="submit" value="Add Tag" />
+
+                    </form>*@
+
+                    @*  <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="addTag">
+                    <div class="form-group">
+
+
+                    <input type="checkbox" id="checkbox1" name="checkbox1" value="myCustomTest"/>
+                    <input type="checkbox" id="checkbox2" name="checkbox2"/>
+
+
+                    </div>
+                    <input style="background-color: white; color: white;" onclick="return confirm('Are you sure you want to create tag?')" type="submit" value="Add Tag" />
+
+                    </form>*@
+
+                    @* <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="addTag">
+
+
+
+
+
+
+                    <input type="text" class="form-control" id="txttagInput" name="tagInput" size="3" placeholder="Enter Tag">
+                    <input style="background-color: white; color: white;" onclick="return confirm('Are you sure you want to create tag?')" type="submit" value="Add Tag" />
+                    <input type="checkbox" id="select-all-checkbox"> Select All
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                    $(document).ready(function () {
+                    // Check/uncheck all checkboxes when "Select All" checkbox is checked/unchecked
+                    $("#select-all-checkbox").click(function () {
+                    $("input[type='checkbox']").prop('checked', $(this).prop('checked'));
+                    });
+                    });
+                    </script>
+
+                    @foreach (var item in Model){
+
+
+
+
+
+
+                    <td><input type="checkbox" name=@item.userId id=@item.userId value=@item.userId /> Checkbox @item.displayName @i</td>
+
+                    }
+
+
+                    </form>*@
+
+
+
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+
+                        i += 1;
+
+                        <tr>
+                            @*<td>@item.userId</td>*@
+                            <td>@item.displayName</td>
+                            @*<td>
+                    <img src="@item.pictureUrl" alt="profilePicture" width="80" height="80">
+                    </td>*@
+
+                            @*<td><span style="opacity:0;">This sentence is invisible</span> </td>*@
+                            <td>@item.editName</td>
+                            <td>
+                                <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="editNameSqlQuery">
+                                    <div class="form-group">
+
+                                        <input type="text" class="form-control" id="txtnickname" name="nickname" size="3" placeholder="Enter Nickname">
+                                        <input type="text" class="form-control" id="txttargetname" name="targetEditName" value="@item.displayName" hidden>
+
+                                    </div>
+                                    <input style="background-color: dodgerblue; color: white;" onclick="return confirm('Are you sure you want to edit nickname?')" type="submit" value="Submit" />
+
+                                </form>
+
+                            </td>
+                            <td>@item.tag</td>
+
+
+
+                            <td>
+                                <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="editTagSqlQuery">
+                                    <div class="form-group">
+
+                                        <input type="text" class="form-control" id="txttagInput" name="tagInput" placeholder="Enter Tag">
+                                        <input type="text" class="form-control" id="txttargetname" name="targetEditName" value="@item.displayName" hidden>
+
+                                    </div>
+                                    <input onclick="return confirm('Are you sure you want to edit tag?')" type="submit" value="Submit" />
+
+                                </form>
+
+                            </td>
+                            @* <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="addTag">
+                    <div class="form-group">
+
+
+                    @if (i == 3){
+
+                    <input type="text" class="form-control" id="txttagInput" name="tagInput" size="3" placeholder="Enter Tag">
+
+                    @*<input type="checkbox" id="@item.displayName" name="@item.displayName" value=@item.displayName />
+
+
+
+                    <input style="background-color: white; color: white;" onclick="return confirm('Are you sure you want to create tag?')" type="submit" value="Add Tag" />
+
+
+                    }
+
+                    </div>
+                    <td><input type="checkbox" name=@item.displayName id=@item.displayName value=@item.displayName /> Checkbox @item.displayName @i</td>
+                    </form>*@
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>Empty</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <table style="float: right;">
+            <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="addTag">
+
+                @* <div class="form-group">*@
+
+
+
+
+                <input type="text" class="form-control" id="txttagInput" name="tagInput" size="3" placeholder="Enter Tag">
+                <input style="background-color: white; color: white;" onclick="return confirm('Are you sure you want to create tag?')" type="submit" value="Add Tag" />
+                <input type="checkbox" id="select-all-checkbox"> Select All
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script>
+                    $(document).ready(function () {
+                        // Check/uncheck all checkboxes when "Select All" checkbox is checked/unchecked
+                        $("#select-all-checkbox").click(function () {
+                            $("input[type='checkbox']").prop('checked', $(this).prop('checked'));
+                        });
+                    });
+                </script>
+
+                @foreach (var item in Model)
+                {
+
+
+
+
+
+
+                <td><input type="checkbox" name=@item.userId id=@item.userId value=@item.userId /> Checkbox @item.displayName @i</td>
+
+                }
+
+                @*</div>*@
+            </form>
+            <
+        </table>
+    </div>
+
+    <button id="testButton">a button</button>
+    <script>
+        // Select all checkboxes and the button
+        const checkboxes = document.querySelectorAll("input[type='checkbox']");
+        const button = document.querySelector("button");
+
+        // Add a click event listener to the button
+        button.addEventListener("click", function () {
+            // Get the values of all checkboxes
+            const checkboxValues = [];
+            checkboxes.forEach(function (checkbox) {
+                checkboxValues.push(checkbox.checked);
+            });
+
+            // Send an AJAX POST request to the server
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/Home/CountCheckedCheckboxes");
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+            };
+            xhr.send(JSON.stringify({ checkboxes: checkboxValues }));
+        });
+
+    </script>
+
+
+    @*<form>
+    <button name="button" value="first" asp-action="ExecuteClient">Test</button>
+    </form>
+
+    <button onclick="submitForm()" class="btn btn-primary">Send</button>
+
+    <form>
+    <button name="WriteLineButton" value="first" asp-action="WriteLine">WriteLine</button>
+    </form>
+
+    <form>
+    <button name="WriteLineInspectElement" value="first" asp-action="/Home/WriteLine">WriteLine</button>
+    </form>
+
+
+
+
+
+    *@
+
+
+    <script type="text/javascript">
+
+
+        function submitForm() {
+            var data = {
+                listName: $("#txtAreaUser").val(),
+                Message: $("#txtMessage").val(),
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/api/LineService/SendMultiMessage',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+            })
+            location.reload();
+        }
+
+                            //backup
+        /*
+        $(document).ready(function () {
+            $(".custom-file-input").on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next(".custom-file-name").html(fileName);
+            })
+        });
+
+    </script>
+
+
+    @*    @foreach (string file in Directory.GetFiles(Server.MapPath("~/Images"), "uploadedImage*"))
+    {
+    <div>
+    <img src="@Url.Content(file)" width="100" />
+    </div>
+    }
+
+
+    *@
