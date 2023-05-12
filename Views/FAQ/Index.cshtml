@@ -1,0 +1,381 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+
+@{
+    ViewData["Title"] = "FAQ";
+}
+
+<h1>FAQ</h1>
+<div style="display: inline-block; margin-left: 20px;">
+    <input type="text" id="questionInput" placeholder="Question" required />
+    <input type="text" id="answerInput" placeholder="Answer" />
+    <input type="text" id="keywordInput" placeholder="Keyword" />
+    <button id="addButton">Insert New FAQ</button>
+</div>
+@model List<Reply>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Add the style tag with the CSS code -->
+    <style>
+        .edit-icon,
+        .edit-icon-question {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+
+
+<table class="table table-bordered table-left">
+    <thead>
+        <tr>
+            <th>number</th>
+            <th>Reply Group</th>
+            <th>Question</th>
+            <th>Answer</th>
+            <th>Keyword </th>
+            <th>Extra Keyword</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    
+                    <td>@item.ReplyId</td>
+                    
+                    
+                    <td>@item.ReplyGroup</td>
+                    @*<td>@item.Question</td>*@
+                    <td>
+                        <span class="editable-question" data-id="@item.ReplyId">@item.Question</span>
+                        <span class="glyphicon glyphicon-pencil edit-icon-question"></span>
+                        <button class="btn btn-primary save-button-question" style="display:none;">Save</button>
+                        <button class="btn btn-danger cancel-button-question" style="display:none;">Cancel</button>
+                    </td>
+                    <td>
+                        <span class="editable-answer" data-id="@item.ReplyId">@item.Answer</span>
+                        <span class="glyphicon glyphicon-pencil edit-icon-answer"></span>
+                        <button class="btn btn-primary save-button-answer" style="display:none;">Save</button>
+                        <button class="btn btn-danger cancel-button-answer" style="display:none;">Cancel</button>
+                    </td>
+                    <td>
+                        <span class="editable-keyword" data-id="@item.ReplyId">@item.Keyword</span>
+                        <span class="glyphicon glyphicon-pencil edit-icon-keyword"></span>
+                        <button class="btn btn-primary save-button-keyword" style="display:none;">Save</button>
+                        <button class="btn btn-danger cancel-button-keyword" style="display:none;">Cancel</button>
+                    </td>
+                    <td>
+                        <span class="editable-keyword1" data-id="@item.ReplyId">@item.Keyword1</span>
+                        <span class="glyphicon glyphicon-pencil edit-icon-keyword1"></span>
+                        <button class="btn btn-primary save-button-keyword1" style="display:none;">Save</button>
+                        <button class="btn btn-danger cancel-button-keyword1" style="display:none;">Cancel</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger delete-button" data-id="@item.ReplyId">Delete</button>
+                    </td>
+
+
+
+
+
+                </tr>
+            }
+        }
+    </tbody>
+
+
+</table>
+
+@*table style*@
+<style>
+    .table-left {
+        display: inline-table;
+        width: auto;
+    }
+</style>
+
+
+<script>
+    $(document).ready(function () {
+
+        // Click event for the question pencil icon
+        $('.edit-icon-question').click(function () {
+            var $editable = $(this).siblings('.editable-question');
+            var currentText = $editable.text();
+            var id = $editable.data('id');
+
+            $editable.replaceWith('<textarea class="editable-input-question form-control" data-id="' + id + '" rows="20" cols="80">' + currentText + '</textarea>');
+            $(this).siblings('.save-button-question').show();
+            $(this).siblings('.cancel-button-question').show(); // Show the cancel button
+            $(this).hide();
+        });
+
+        // Click event for the answer pencil icon
+        $('.edit-icon-answer').click(function () {
+            var $editable = $(this).siblings('.editable-answer');
+            var currentText = $editable.text();
+            var id = $editable.data('id');
+
+            $editable.replaceWith('<textarea class="editable-input-answer form-control" data-id="' + id + '" rows="5" cols="30">' + currentText + '</textarea>');
+            $(this).siblings('.save-button-answer').show();
+            $(this).siblings('.cancel-button-answer').show(); // Show the cancel button
+            $(this).hide();
+        });
+
+        // Click event for the question save button
+        $('.save-button-question').click(function () {
+            var $input = $(this).siblings('.editable-input-question');
+            var newText = $input.val();
+            var id = $input.data('id');
+            var $thisButton = $(this);
+
+            // Perform the AJAX call to update the server with the new data
+            $.ajax({
+                url: '@Url.Action("UpdateQuestion", "FAQ")',
+                type: 'POST',
+                data: { replyId: id, question: newText },
+                success: function () {
+                    $input.replaceWith('<span class="editable-question" data-id="' + id + '">' + newText + '</span>');
+                    $thisButton.siblings('.edit-icon-question').show();
+                    $thisButton.hide(); // Hide the save button
+                    $thisButton.siblings('.cancel-button-question').hide(); // Hide the cancel button
+                }
+            });
+        });
+
+        // Click event for the answer save button
+        $('.save-button-answer').click(function () {
+            var $input = $(this).siblings('.editable-input-answer');
+            var newText = $input.val();
+            var id = $input.data('id');
+            var $thisButton = $(this);
+
+            // Perform the AJAX call to update the server with the new data
+            $.ajax({
+                url: '@Url.Action("UpdateAnswer", "FAQ")',
+                type: 'POST',
+                data: { replyId: id, answer: newText },
+                success: function () {
+                    $input.replaceWith('<span class="editable-answer" data-id="' + id + '">' + newText + '</span>');
+                    $thisButton.siblings('.edit-icon-answer').show();
+                    $thisButton.hide(); // Hide the save button
+                    $thisButton.siblings('.cancel-button-answer').hide(); // Hide the cancel button
+                }
+            });
+        });
+
+        // Click event for the question cancel button
+        $('.cancel-button-question').click(function () {
+            var $input = $(this).siblings('.editable-input-question');
+            var currentText = $input.text();
+            var id = $input.data('id');
+            $input.replaceWith('<span class="editable-question" data-id="' + id + '">' + currentText + '</span>');
+            $(this).siblings('.edit-icon-question').show();
+            $(this).hide(); // Hide the cancel button
+            $(this).siblings('.save-button-question').hide(); // Hide the save button
+        });
+
+        // Click event for the answer cancel button
+        $('.cancel-button-answer').click(function () {
+            var $input = $(this).siblings('.editable-input-answer');
+            var currentText = $input.text();
+            var id = $input.data('id');
+            $input.replaceWith('<span class="editable-answer" data-id="' + id + '">' + currentText + '</span>');
+            $(this).siblings('.edit-icon-answer').show();
+            $(this).hide(); // Hide the cancel button
+            $(this).siblings('.save-button-answer').hide(); // Hide the save button
+        });
+
+    });
+
+    // Click event for the keyword pencil icon
+    $('.edit-icon-keyword').click(function () {
+        var $editable = $(this).siblings('.editable-keyword');
+        var currentText = $editable.text();
+        var id = $editable.data('id');
+
+        $editable.replaceWith('<textarea class="editable-input-keyword form-control" data-id="' + id + '" rows="1" cols="80">' + currentText + '</textarea>');
+        $(this).siblings('.save-button-keyword').show();
+        $(this).siblings('.cancel-button-keyword').show(); // Show the cancel button
+        $(this).hide();
+    });
+
+    // Click event for the keyword1 pencil icon
+    $('.edit-icon-keyword1').click(function () {
+        var $editable = $(this).siblings('.editable-keyword1');
+        var currentText = $editable.text();
+        var id = $editable.data('id');
+
+        $editable.replaceWith('<textarea class="editable-input-keyword1 form-control" data-id="' + id + '" rows="1" cols="80">' + currentText + '</textarea>');
+        $(this).siblings('.save-button-keyword1').show();
+        $(this).siblings('.cancel-button-keyword1').show(); // Show the cancel button
+        $(this).hide();
+    });
+
+    // Click event for the keyword save button
+    $('.save-button-keyword').click(function () {
+        var $input = $(this).siblings('.editable-input-keyword');
+        var newText = $input.val();
+        var id = $input.data('id');
+        var $thisButton = $(this);
+
+        // Perform the AJAX call to update the server with the new data
+        $.ajax({
+            url: '@Url.Action("UpdateKeyword", "FAQ")',
+            type: 'POST',
+            data: { replyId: id, keyword: newText },
+            success: function () {
+                $input.replaceWith('<span class="editable-keyword" data-id="' + id + '">' + newText + '</span>');
+                $thisButton.siblings('.edit-icon-keyword').show();
+                $thisButton.hide(); // Hide the save button
+                $thisButton.siblings('.cancel-button-keyword').hide(); // Hide the cancel button
+            }
+        });
+    });
+
+    // Click event for the keyword1 save button
+    $('.save-button-keyword1').click(function () {
+        var $input = $(this).siblings('.editable-input-keyword1');
+        var newText = $input.val();
+        var id = $input.data('id');
+        var $thisButton = $(this);
+
+        // Perform the AJAX call to update the server with the new data
+        $.ajax({
+            url: '@Url.Action("UpdateKeyword1", "FAQ")',
+            type: 'POST',
+            data: { replyId: id, keyword1: newText },
+            success: function () {
+                $input.replaceWith('<span class="editable-keyword1" data-id="' + id + '">' + newText + '</span>');
+                $thisButton.siblings('.edit-icon-keyword1').show();
+                $thisButton.hide(); // Hide the save button
+                $thisButton.siblings('.cancel-button-keyword1').hide(); // Hide the cancel button
+            }
+        });
+    });
+
+    // Click event for the keyword cancel button
+    // Click event for the keyword cancel button
+    $('.cancel-button-keyword').click(function () {
+        var $input = $(this).siblings('.editable-input-keyword');
+        var currentText = $input.text();
+        var id = $input.data('id');
+        $input.replaceWith('<span class="editable-keyword" data-id="' + id + '">' + currentText + '</span>');
+        $(this).siblings('.edit-icon-keyword').show();
+        $(this).hide(); // Hide the cancel button
+        $(this).siblings('.save-button-keyword').hide(); // Hide the save button
+    });
+
+    // Click event for the keyword1 cancel button
+    $('.cancel-button-keyword1').click(function () {
+        var $input = $(this).siblings('.editable-input-keyword1');
+        var currentText = $input.text();
+        var id = $input.data('id');
+        $input.replaceWith('<span class="editable-keyword1" data-id="' + id + '">' + currentText + '</span>');
+        $(this).siblings('.edit-icon-keyword1').show();
+        $(this).hide(); // Hide the cancel button
+        $(this).siblings('.save-button-keyword1').hide(); // Hide the save button
+    });
+
+
+</script>
+
+ 
+    @*// Insert script*@
+<script>
+    $(document).ready(function () {
+        $('#addButton').click(function () {
+            var question = $('#questionInput').val();
+            var answer = $('#answerInput').val();
+            var keyword = $('#keywordInput').val();
+
+            if (question.trim() === '') {
+                alert('Question cannot be empty!');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("AddData", "FAQ")',
+                type: 'POST',
+                data: { question: question, answer: answer, keyword: keyword },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Failed to add data!');
+                }
+            });
+        });
+    });
+</script>
+
+@*Delete row script*@
+<script>
+    $(document).ready(function () {
+        $('#addButton').click(function () {
+            var question = $('#questionInput').val();
+            var answer = $('#answerInput').val();
+            var keyword = $('#keywordInput').val();
+
+            if (question.trim() === '') {
+                alert('Question cannot be empty!');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("AddData", "FAQ")',
+                type: 'POST',
+                data: { question: question, answer: answer, keyword: keyword },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Failed to add data!');
+                }
+            });
+        });
+
+        $('.delete-button').click(function () {
+            var replyId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this entry?')) {
+                $.ajax({
+                    url: '@Url.Action("DeleteData", "FAQ")',
+                    type: 'POST',
+                    data: { replyId: replyId },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Failed to delete data!');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
+
+@*move the page to the very right on the first load *@
+<script>
+    $(document).ready(function () {
+        $(window).on('load', function () {
+            $('html, body').animate({ scrollLeft: $(document).width() }, 500);
+        });
+    });
+</script>

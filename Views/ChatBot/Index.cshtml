@@ -1,43 +1,39 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-
-
-@*@Model List<NewQuestion>*@
+﻿
 @model MyViewModel
 
 
 
-@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<button id="myButton">Click me!</button>
-<script>
-    $(document).ready(function () {
-        $('#myButton').click(function () {
-            $.ajax({
-                url: '/ChatBot/CreateGroup',
-                type: 'POST'
-            });
-        });
-    });
-
-
-</script>
-*@
-<div>
-    <label for="groupName">Create Reply Group:</label>
-    <input type="text" id="groupName" name="groupName" />
-    <button id="createButton" class="btn btn-primary">Create</button>
+<div style="display:flex; padding-bottom: 15px;">
+    <div>
+        <label for="groupName">Create Reply Group:</label>
+        <input type="text" id="groupName" name="groupName" />
+        <button id="createButton" style="background-color: cadetblue; color: white;" class="btn">Create</button>
+    </div>
+    @if (Model != null && Model.Questions.Count > 0)
+    {
+        <form method="post" action="@Url.Action("SetReplyGroup", "ChatBot")">
+            <div style="margin-left:10px">
+                <label for="replyGroup">Delete Reply Group:</label>
+                <select id="replyGroup" name="replyGroup" class="searchable-select">
+                    @foreach (var option in Model.ReplyGroup)
+                    {
+                        <option value="@option.reply_group">@option.reply_group</option>
+                    }
+                </select>
+                <input type="hidden" name="question" value="@Model.Questions[0].question" />
+                <button type="submit" style="background-color: indianred; color: white;" class="btn" name="SetReplyGroupButton" value="delete" onclick="return confirm('Are you sure you want to delete the group?')">Delete Group</button>
+            </div>
+        </form>
+    }
 </div>
+
 
 
     <table class="table table-bordered">
     <thead>
         <tr>
-            <th>reply_id</th>
-            <th>reply_group</th>
+            
+            
             <th>question</th>
             <th>set group</th>
             <th>Delete Question</th>
@@ -50,26 +46,29 @@
         {
             @foreach (var item in Model.Questions)
             {
+               
                 <tr>
-                    <td>@item.reply_id</td>
-                    <td>@item.reply_group</td>
+                    
+                  
                     <td>@item.question</td>
                     <td>
                         <form method="post" action="@Url.Action("SetReplyGroup", "ChatBot")">
-                            <select name="replyGroup">
+                            <select name="replyGroup" class="searchable-select">
                                 @foreach (var option in Model.ReplyGroup)
                                 {
                                     <option value="@option.reply_group">@option.reply_group</option>
                                 }
                             </select>
                             <input type="hidden" name="question" value="@item.question" />
-                            <button type="submit" style="background-color: dodgerblue;color: white;">Set</button>
+                            <button type="submit" style="background-color: dodgerblue;color: white;" name="SetReplyGroupButton" value="set">Set</button>
+                            
                         </form>
                     </td>
                     <td>
                         <form method="post" action="@Url.Action("DeleteQuestion", "ChatBot")">
                             <input type="hidden" name="question" value="@item.question" />
-                            <button type="submit" style="background-color: darkred; color: white;">Delete</button>
+                            
+                            <button type="submit" style="background-color: darkred; color: white;" onclick="return confirm('Are you sure you want to delete this question?')">Delete Question</button>
 
                         </form>
                     </td>
@@ -85,9 +84,15 @@
 
 
 @section Scripts {
+    
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
     <script>
         $(document).ready(function () {
+
+            $(".searchable-select").select2();
             $("#createButton").on("click", function () {
                 var groupName = $("#groupName").val();
                 if (groupName === '') {

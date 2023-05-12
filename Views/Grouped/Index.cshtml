@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+@model MyViewModel
+
+
+
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>reply_id</th>
+            <th>question</th>
+            <th>reply_group</th>
+            <th>change grouping</th>
+            <th>delete grouping</th>
+            
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model.Questions)
+            {
+                <tr>
+                    <td>@item.reply_id</td>
+                    
+                    <td>@item.question</td>
+                    <td>
+                       
+                          
+                        
+                         <div style="display: flex; flex-direction: row; align-items: center;">
+                            <span style="width: 100px;">@item.reply_group</span>
+                            <form method="post" action="@Url.Action("ModifyGroupedQuestion", "Grouped")">
+                            <input type="text" id="replyGroup" name="replyGroup" style="flex: 0; margin-right: 10px;max-width: 150px;" />
+                            <input type="hidden" name="question" value="@item.question" />
+                                <button type="submit" style="background-color: dodgerblue;color: white;" name="SetReplyGroupButton" value="set" onclick="return confirm('Are you sure you want to edit this question?')">Edit</button>
+
+                        </form>
+                        </div>
+
+
+                    </td>
+                    <td>
+                        <form method="post" action="@Url.Action("ModifyGroupedQuestion", "Grouped")">
+                            <select name="replyGroup" class="searchable-select">
+                                @foreach (var option in Model.ReplyGroup)
+                                {
+                                    <option value="@option.reply_group">@option.reply_group</option>
+                                }
+                            </select>
+                            <input type="hidden" name="question" value="@item.question" />
+                            <button type="submit" style="background-color: dodgerblue;color: white;" name="SetReplyGroupButton" value="set">Change</button>
+
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="@Url.Action("DeleteQuestion", "Grouped")">
+                            <input type="hidden" name="question" value="@item.question" />
+
+                            <button type="submit" style="background-color: darkred; color: white;" onclick="return confirm('Are you sure you want to delete this question?')">Delete Question</button>
+
+                        </form>
+                    </td>
+
+                   
+
+                   
+                </tr>
+            }
+        }
+    </tbody>
+
+
+</table>
+
+

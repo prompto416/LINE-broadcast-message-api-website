@@ -14,5 +14,6 @@ namespace LineService.Data
             : base(options)
         {
         }
+
     }
 }

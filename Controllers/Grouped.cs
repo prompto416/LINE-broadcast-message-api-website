@@ -1,15 +1,12 @@
 ﻿using LineService.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing.Constraints;
-using Microsoft.Data.SqlClient;
 using MySql.Data.MySqlClient;
-using System;
 using System.Collections.Generic;
-using System.Net;
+using System;
 
 namespace LineService.Controllers
 {
-    public class ChatBotController : Controller
+    public class GroupedController : Controller
     {
         public IActionResult Index()
         {
@@ -18,7 +15,7 @@ namespace LineService.Controllers
             using (MySqlConnection con = new MySqlConnection("server=localhost;user=root;database=deletemedb;port=3306;password="))
             {
                 con.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from new_question", con);
+                MySqlCommand cmd = new MySqlCommand("select * from grouped_question", con);
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
@@ -74,26 +71,86 @@ namespace LineService.Controllers
 
             }
 
-            var viewModel = new MyViewModel
+            var viewModel2 = new MyViewModel
             {
                 Questions = questions,
                 ReplyGroup = replyGroups
             };
 
 
-            return View(viewModel);
+            return View(viewModel2);
         }
 
+        public void DeleteReplyGroup(string groupName)
+        {
+            string connectionString = "server=localhost;user=root;database=deletemedb;port=3306;password=";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                // Delete the group
+                using (MySqlCommand command = new MySqlCommand("DELETE FROM reply_group WHERE group_name = @GroupName", connection))
+                {
+                    command.Parameters.AddWithValue("@GroupName", groupName);
+                    command.ExecuteNonQuery();
+                }
+            }
+
+
+        }
+
+        [HttpPost]
+        public ActionResult ModifyGroupedQuestion(string replyGroup, string question, string SetReplyGroupButton)
+        {
+            if (SetReplyGroupButton == "delete")
+            {
+                DeleteReplyGroup(replyGroup);
+                return RedirectToAction("Index");
+            }
+
+            string connectionString = "server=localhost;user=root;database=deletemedb;port=3306;password=";
+            string updateQuery = "UPDATE grouped_question SET reply_group = @replyGroup WHERE question = @question";
+            //string transferQuery = "INSERT INTO grouped_question SELECT * FROM grouped_question WHERE question = @question";
+            //string deleteQuery = "DELETE FROM grouped_question WHERE question = @question";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@replyGroup", replyGroup);
+                    command.Parameters.AddWithValue("@question", question);
+                    command.ExecuteNonQuery();
+                }
+               
+             
+            }
+
+
+
+            return RedirectToAction("Index");
+        }
 
 
         [HttpPost]
-        public IActionResult ButtonClicked(string buttonClicked)
+        public ActionResult DeleteQuestion(string question)
         {
-            Console.WriteLine(buttonClicked);
-            return View();
+            string connectionString = "server=localhost;user=root;database=deletemedb;port=3306;password="; // Replace with your connection string
+            string query = "DELETE FROM grouped_question WHERE question = @question";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@question", question);
+                    command.ExecuteNonQuery();
+                }
+            }
+            Console.WriteLine(question);
+
+            return RedirectToAction("Index");
         }
-
-
 
         [HttpPost]
         public JsonResult AddReplyGroup(string groupName, string question)
@@ -115,91 +172,6 @@ namespace LineService.Controllers
 
 
             return Json(new { success = true });
-        }
-
-       
-        public void DeleteReplyGroup(string groupName)
-        {
-            string connectionString = "server=localhost;user=root;database=deletemedb;port=3306;password=";
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                // Delete the group
-                using (MySqlCommand command = new MySqlCommand("DELETE FROM reply_group WHERE group_name = @GroupName", connection))
-                {
-                    command.Parameters.AddWithValue("@GroupName", groupName);
-                    command.ExecuteNonQuery();
-                }
-            }
-
-           
-        }
-
-
-
-
-
-        [HttpPost]
-        public ActionResult SetReplyGroup(string replyGroup, string question,string SetReplyGroupButton)
-        {
-            if (SetReplyGroupButton == "delete")
-            {
-                DeleteReplyGroup(replyGroup);
-                return RedirectToAction("Index");
-            }
-            
-            string connectionString = "server=localhost;user=root;database=deletemedb;port=3306;password="; 
-            string updateQuery = "UPDATE new_question SET reply_group = @replyGroup WHERE question = @question";
-            string transferQuery = "INSERT INTO grouped_question SELECT * FROM new_question WHERE question = @question";
-            string deleteQuery = "DELETE FROM new_question WHERE question = @question";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-                using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
-                {
-                    command.Parameters.AddWithValue("@replyGroup", replyGroup);
-                    command.Parameters.AddWithValue("@question", question);
-                    command.ExecuteNonQuery();
-                }
-                using (MySqlCommand command = new MySqlCommand(transferQuery, connection))
-                {
-                    command.Parameters.AddWithValue("@question", question);
-                    command.ExecuteNonQuery();
-                }
-                using (MySqlCommand command = new MySqlCommand(deleteQuery, connection))
-                {
-                    command.Parameters.AddWithValue("@question", question);
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            
-
-            return RedirectToAction("Index");
-        }
-
-
-
-        [HttpPost]
-        public ActionResult DeleteQuestion(string question)
-        {
-            string connectionString = "server=localhost;user=root;database=deletemedb;port=3306;password="; // Replace with your connection string
-            string query = "DELETE FROM new_question WHERE question = @question";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@question", question);
-                    command.ExecuteNonQuery();
-                }
-            }
-            Console.WriteLine(question);
-
-            return RedirectToAction("Index");
         }
 
 
